@@ -24,7 +24,7 @@ const app = {
         })
         .catch((err) => {
           //alert "請重新登入"
-          alert(err.response.data.message);
+          alert(err.data.message);
           //頁面跳轉到登入頁
           window.location = "login.html";
         });
