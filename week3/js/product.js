@@ -1,7 +1,7 @@
 import { createApp } from "https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.26/vue.esm-browser.min.js";
 
-let productModal;
-let delProductModal;
+let productModal = null;
+let delProductModal = null;
 const app = {
   data() {
     return {
@@ -66,8 +66,8 @@ const app = {
       }
     },
     updatedProduct() {
-      let url;
-      let methods;
+      let url = "";
+      let methods = "";
       if (this.isNew) {
         url = `${this.apiUrl}/api/${this.apiPath}/admin/product`;
         methods = "post";
@@ -97,7 +97,7 @@ const app = {
         .then((res) => {
           delProductModal.hide();
           this.getData();
-          //alert(res.data.message);
+          alert(res.data.message);
         })
         .catch((err) => {
           alert(err.data.message);
@@ -114,8 +114,13 @@ const app = {
     //////////////////////////////////////////////////////<===================================這有問題
     deletePic() {
       this.delImages.forEach((item) => {
-        this.tempProduct.imagesUrl.splice(item, 1);
+        // this.tempProduct.imagesUrl.splice(item, 1);
         // console.log(item);
+        const index = this.tempProduct.imagesUrl.findIndex((el) => {
+          return el === item;
+        });
+
+        this.tempProduct.imagesUrl.splice(index, 1);
       });
       this.delImages = [];
     },

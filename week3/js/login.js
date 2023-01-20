@@ -39,7 +39,6 @@ const app = {
         });
     },
   },
-  mounted() {},
 };
 
 createApp(app).mount("#app");
