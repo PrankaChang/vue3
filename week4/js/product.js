@@ -1,7 +1,40 @@
 import { createApp } from "https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.26/vue.esm-browser.min.js";
+import pagination from "./pagination.js";
 
-let productModal;
-let delProductModal;
+let productModal = {};
+let delProductModal = {};
+//區域元件modalProduct註冊
+const modalProduct = {
+  props: ["tempProduct", "updatedProduct"],
+  data() {
+    return {
+      isNew: false,
+      delImages: [],
+    };
+  },
+  template: "#product-modal-template",
+  methods: {
+    addPic() {
+      // console.log(this.tempProduct.imagesUrl);
+      if (!this.tempProduct.imagesUrl) {
+        this.tempProduct.imagesUrl = [];
+      }
+      this.tempProduct.imagesUrl.push(this.tempProduct.tempUrl);
+      this.tempProduct.tempUrl = "";
+    },
+    deletePic() {
+      this.delImages.forEach((item) => {
+        const num = this.tempProduct.imagesUrl.findIndex((el) => {
+          return el === item;
+        });
+
+        this.tempProduct.imagesUrl.splice(num, 1);
+      });
+      this.delImages = [];
+    },
+  },
+};
+
 const app = {
   data() {
     return {
@@ -12,9 +45,12 @@ const app = {
         imagesUrl: [],
         tempUrl: "",
       },
-      isNew: false,
-      delImages: [],
+      pages: {},
     };
+  },
+  components: {
+    pagination,
+    modalProduct,
   },
   methods: {
     //確認  api user check fn()
@@ -36,13 +72,16 @@ const app = {
           window.location = "login.html";
         });
     },
-    getData() {
+    //參數預設
+    getData(page = 1) {
       // api products url
-      const url = `${this.apiUrl}/api/${this.apiPath}/admin/products/all`;
+      const url = `${this.apiUrl}/api/${this.apiPath}/admin/products/?page=${page}`;
       axios
         .get(url)
         .then((response) => {
           this.products = response.data.products;
+          this.pages = response.data.pagination;
+          // console.log(response.data);
         })
         .catch((err) => {
           alert(err.response.data.message);
@@ -103,25 +142,7 @@ const app = {
           alert(err.data.message);
         });
     },
-    addPic() {
-      // console.log(this.tempProduct.imagesUrl);
-      if (!this.tempProduct.imagesUrl) {
-        this.tempProduct.imagesUrl = [];
-      }
-      this.tempProduct.imagesUrl.push(this.tempProduct.tempUrl);
-      this.tempProduct.tempUrl = "";
-    },
-    //////////////////////////////////////////////////////<===================================這有問題
-    deletePic() {
-      this.delImages.forEach((item) => {
-        const num = this.tempProduct.imagesUrl.findIndex((el) => {
-          return el === item;
-        });
 
-        this.tempProduct.imagesUrl.splice(num, 1);
-      });
-      this.delImages = [];
-    },
     ///////////////////////////////////////////////////////////
   },
   mounted() {
@@ -145,5 +166,9 @@ const app = {
     );
   },
 };
+//全域元件註冊-----------(?)
+// app.component ("modalProduct", {
+//   template:' #product-modal-template',
+// });
 
 createApp(app).mount("#app");
